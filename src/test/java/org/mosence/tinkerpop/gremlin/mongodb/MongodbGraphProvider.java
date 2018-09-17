@@ -30,7 +30,6 @@ public class MongodbGraphProvider extends AbstractGraphProvider {
     @Override
     public void clear(Graph graph, Configuration configuration) throws Exception {
         if (null != graph) {
-            if (graph.tx().isOpen()) graph.tx().rollback();
             graph.close();
         }
         if (null != configuration && configuration.containsKey(MongodbGraph.CONFIG_URI)

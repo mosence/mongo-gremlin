@@ -79,7 +79,7 @@ public final class DefaultMongodbTrait implements MongodbTrait {
 
     @Override
     public <V> Iterator<VertexProperty<V>> getVertexProperties(final MongodbVertex vertex, final String... keys) {
-        List<String> keyList = Stream.of(keys).map(k->k.replaceAll(PROPERTY_REPLACE_REGEX,PROPERTY_REPLACE_CHAR)).collect(Collectors.toList());
+        List<String> keyList = Stream.of(keys).map(k -> k.replaceAll(PROPERTY_REPLACE_REGEX, PROPERTY_REPLACE_CHAR)).collect(Collectors.toList());
         String[] keyArray = keyList.toArray(new String[0]);
         return (Iterator) IteratorUtils.stream(vertex.getBaseVertex().getKeys())
                 .filter(key -> ElementHelper.keyExists(key, keyArray))
@@ -142,14 +142,10 @@ public final class DefaultMongodbTrait implements MongodbTrait {
 
     @Override
     public Iterator<Vertex> lookupVertices(final MongodbGraph graph, final List<HasContainer> hasContainers, final Object... ids) {
-        // ids are present, filter on them first
         List<HasContainer> containers = preTansHasContainer(hasContainers);
         if (ids.length > 0) {
             return IteratorUtils.filter(graph.vertices(ids), vertex -> HasContainer.testAll(vertex, containers));
         }
-        ////// do index lookups //////
-        graph.tx().readWrite();
-        // get a label being search on
         Optional<String> label = containers.stream()
                 .filter(hasContainer -> hasContainer.getKey().equals(T.label.getAccessor()))
                 .filter(hasContainer -> Compare.eq == hasContainer.getBiPredicate())
@@ -184,7 +180,7 @@ public final class DefaultMongodbTrait implements MongodbTrait {
         }
     }
 
-    private List<HasContainer> preTansHasContainer(List<HasContainer> hasContainers){
-        return hasContainers.stream().map(hasContainer -> new HasContainer(hasContainer.getKey().replaceAll(PROPERTY_REPLACE_REGEX,PROPERTY_REPLACE_CHAR),hasContainer.getPredicate())).collect(Collectors.toList());
+    private List<HasContainer> preTansHasContainer(List<HasContainer> hasContainers) {
+        return hasContainers.stream().map(hasContainer -> new HasContainer(hasContainer.getKey().replaceAll(PROPERTY_REPLACE_REGEX, PROPERTY_REPLACE_CHAR), hasContainer.getPredicate())).collect(Collectors.toList());
     }
 }

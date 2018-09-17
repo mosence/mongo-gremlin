@@ -24,14 +24,12 @@ public class MongodbRelationshipImpl extends BaseMongodbEntityImpl implements Mo
     public static MongodbRelationshipImpl newInstance(Document node, MongoCollection<Document> nodeCollection, MongoCollection<Document> edgeCollection) {
         MongodbRelationshipImpl newEdge = new MongodbRelationshipImpl(node,nodeCollection,edgeCollection);
         newEdge.needCreate();
-        MongodbTxImpl.ram(newEdge);
         newEdge.persist();
         return newEdge;
     }
 
     public static MongodbRelationshipImpl valueOf(Document node, MongoCollection<Document> nodeCollection, MongoCollection<Document> edgeCollection) {
         MongodbRelationshipImpl newEdge = new MongodbRelationshipImpl(node,nodeCollection,edgeCollection);
-        MongodbTxImpl.ram(newEdge);
         return newEdge;
     }
 

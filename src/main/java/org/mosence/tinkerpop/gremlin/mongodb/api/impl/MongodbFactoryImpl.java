@@ -33,7 +33,7 @@ public class MongodbFactoryImpl implements MongodbFactory {
         }
     }
 
-    protected MongoClient createMongoClient(String uri){
+    private MongoClient createMongoClient(String uri){
         return MongoClients.create(uri);
     }
 

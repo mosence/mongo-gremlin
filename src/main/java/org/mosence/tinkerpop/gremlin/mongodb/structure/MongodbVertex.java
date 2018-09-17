@@ -1,6 +1,5 @@
 package org.mosence.tinkerpop.gremlin.mongodb.structure;
 
-import com.mongodb.MongoException;
 import org.apache.tinkerpop.gremlin.process.traversal.util.TraversalInterruptedException;
 import org.apache.tinkerpop.gremlin.structure.*;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
@@ -40,7 +39,6 @@ public final class MongodbVertex extends BaseMongodbElement implements Vertex, W
             throw Edge.Exceptions.userSuppliedIdsNotSupported();
         }
 
-        this.graph.tx().readWrite();
         final MongodbNode node = (MongodbNode) this.baseElement;
         final MongodbEdge edge = new MongodbEdge(node.connectTo(((MongodbVertex) inVertex).getBaseVertex(), label), this.graph);
         ElementHelper.attachProperties(edge, keyValues);
@@ -54,8 +52,7 @@ public final class MongodbVertex extends BaseMongodbElement implements Vertex, W
 
     @Override
     public void remove() {
-        this.graph.tx().readWrite();
-        this.graph.trait.removeVertex(this);
+        this.graph.getTrait().removeVertex(this);
     }
 
     @Override
@@ -64,20 +61,17 @@ public final class MongodbVertex extends BaseMongodbElement implements Vertex, W
         if (ElementHelper.getIdValue(keyValues).isPresent()) {
             throw Vertex.Exceptions.userSuppliedIdsNotSupported();
         }
-        this.graph.tx().readWrite();
-        return this.graph.trait.setVertexProperty(this, cardinality, key, value, keyValues);
+        return this.graph.getTrait().setVertexProperty(this, cardinality, key, value, keyValues);
     }
 
     @Override
     public <V> VertexProperty<V> property(final String key) {
-        this.graph.tx().readWrite();
-        return this.graph.trait.getVertexProperty(this, key);
+        return this.graph.getTrait().getVertexProperty(this, key);
     }
 
     @Override
     public <V> Iterator<VertexProperty<V>> properties(final String... propertyKeys) {
-        this.graph.tx().readWrite();
-        return this.graph.trait.getVertexProperties(this, propertyKeys);
+        return this.graph.getTrait().getVertexProperties(this, propertyKeys);
     }
 
     @Override
@@ -87,91 +81,77 @@ public final class MongodbVertex extends BaseMongodbElement implements Vertex, W
 
     @Override
     public String label() {
-        this.graph.tx().readWrite();
         return String.join(LABEL_DELIMINATOR, this.labels());
     }
 
     @Override
     public Iterator<Vertex> vertices(final Direction direction, final String... edgeLabels) {
-        this.graph.tx().readWrite();
-        try{
-            return new Iterator<Vertex>() {
-                final Iterator<MongodbRelationship> relationshipIterator = IteratorUtils.filter(0 == edgeLabels.length ?
-                        BOTH == direction ?
-                                IteratorUtils.concat(getBaseVertex().relationships(MongodbHelper.mapDirection(OUT)).iterator(),
-                                        getBaseVertex().relationships(MongodbHelper.mapDirection(IN)).iterator()) :
-                                getBaseVertex().relationships(MongodbHelper.mapDirection(direction)).iterator() :
-                        BOTH == direction ?
-                                IteratorUtils.concat(getBaseVertex().relationships(MongodbHelper.mapDirection(OUT), (edgeLabels)).iterator(),
-                                        getBaseVertex().relationships(MongodbHelper.mapDirection(IN), (edgeLabels)).iterator()) :
-                                getBaseVertex().relationships(MongodbHelper.mapDirection(direction), (edgeLabels)).iterator(), graph.trait.getRelationshipPredicate());
+        return new Iterator<Vertex>() {
+            final Iterator<MongodbRelationship> relationshipIterator = IteratorUtils.filter(0 == edgeLabels.length ?
+                    BOTH == direction ?
+                            IteratorUtils.concat(getBaseVertex().relationships(MongodbHelper.mapDirection(OUT)).iterator(),
+                                    getBaseVertex().relationships(MongodbHelper.mapDirection(IN)).iterator()) :
+                            getBaseVertex().relationships(MongodbHelper.mapDirection(direction)).iterator() :
+                    BOTH == direction ?
+                            IteratorUtils.concat(getBaseVertex().relationships(MongodbHelper.mapDirection(OUT), (edgeLabels)).iterator(),
+                                    getBaseVertex().relationships(MongodbHelper.mapDirection(IN), (edgeLabels)).iterator()) :
+                            getBaseVertex().relationships(MongodbHelper.mapDirection(direction), (edgeLabels)).iterator(), graph.getTrait().getRelationshipPredicate());
 
-                @Override
-                public boolean hasNext() {
-                    return this.relationshipIterator.hasNext();
-                }
+            @Override
+            public boolean hasNext() {
+                return this.relationshipIterator.hasNext();
+            }
 
-                @Override
-                public MongodbVertex next() {
-                    try {
-                        return new MongodbVertex(this.relationshipIterator.next().other(getBaseVertex()), graph);
-                    } catch (Exception ex) {
-                        throw new TraversalInterruptedException();
-                    }
+            @Override
+            public MongodbVertex next() {
+                try {
+                    return new MongodbVertex(this.relationshipIterator.next().other(getBaseVertex()), graph);
+                } catch (Exception ex) {
+                    throw new TraversalInterruptedException();
                 }
-            };
-        }catch (MongoException ex){
-            throw new TraversalInterruptedException();
-        }
+            }
+        };
     }
 
     @Override
     public Iterator<Edge> edges(final Direction direction, final String... edgeLabels) {
-        this.graph.tx().readWrite();
-        try{
-            return new Iterator<Edge>() {
-                final Iterator<MongodbRelationship> relationshipIterator = IteratorUtils.filter(0 == edgeLabels.length ?
-                        BOTH == direction ?
-                                IteratorUtils.concat(getBaseVertex().relationships(MongodbHelper.mapDirection(OUT)).iterator(),
-                                        getBaseVertex().relationships(MongodbHelper.mapDirection(IN)).iterator()) :
-                                getBaseVertex().relationships(MongodbHelper.mapDirection(direction)).iterator() :
-                        BOTH == direction ?
-                                IteratorUtils.concat(getBaseVertex().relationships(MongodbHelper.mapDirection(OUT), (edgeLabels)).iterator(),
-                                        getBaseVertex().relationships(MongodbHelper.mapDirection(IN), (edgeLabels)).iterator()) :
-                                getBaseVertex().relationships(MongodbHelper.mapDirection(direction), (edgeLabels)).iterator(), graph.trait.getRelationshipPredicate());
+        return new Iterator<Edge>() {
+            final Iterator<MongodbRelationship> relationshipIterator = IteratorUtils.filter(0 == edgeLabels.length ?
+                    BOTH == direction ?
+                            IteratorUtils.concat(getBaseVertex().relationships(MongodbHelper.mapDirection(OUT)).iterator(),
+                                    getBaseVertex().relationships(MongodbHelper.mapDirection(IN)).iterator()) :
+                            getBaseVertex().relationships(MongodbHelper.mapDirection(direction)).iterator() :
+                    BOTH == direction ?
+                            IteratorUtils.concat(getBaseVertex().relationships(MongodbHelper.mapDirection(OUT), (edgeLabels)).iterator(),
+                                    getBaseVertex().relationships(MongodbHelper.mapDirection(IN), (edgeLabels)).iterator()) :
+                            getBaseVertex().relationships(MongodbHelper.mapDirection(direction), (edgeLabels)).iterator(), graph.getTrait().getRelationshipPredicate());
 
-                @Override
-                public boolean hasNext() {
-                    return this.relationshipIterator.hasNext();
-                }
+            @Override
+            public boolean hasNext() {
+                return this.relationshipIterator.hasNext();
+            }
 
-                @Override
-                public MongodbEdge next() {
-                    try {
-                        return new MongodbEdge(this.relationshipIterator.next(), graph);
-                    } catch (Exception ex) {
-                        throw new TraversalInterruptedException();
-                    }
+            @Override
+            public MongodbEdge next() {
+                try {
+                    return new MongodbEdge(this.relationshipIterator.next(), graph);
+                } catch (Exception ex) {
+                    throw new TraversalInterruptedException();
                 }
-            };
-        }catch (MongoException ex){
-            throw new TraversalInterruptedException();
-        }
+            }
+        };
     }
 
     public Set<String> labels() {
-        this.graph.tx().readWrite();
         final Set<String> labels = new TreeSet<>(this.getBaseVertex().labels());
         return Collections.unmodifiableSet(labels);
     }
 
     public void addLabel(final String label) {
-        this.graph.tx().readWrite();
         this.getBaseVertex().addLabel(label);
     }
 
     public void removeLabel(final String label) {
-        this.graph.tx().readWrite();
         this.getBaseVertex().removeLabel(label);
     }
 

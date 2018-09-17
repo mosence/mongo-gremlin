@@ -67,21 +67,18 @@ public final class MongodbVertexProperty<V> implements VertexProperty<V> {
 
     @Override
     public <U> Iterator<Property<U>> properties(final String... propertyKeys) {
-        this.vertex.graph.tx().readWrite();
-        return this.vertex.graph.trait.getProperties(this, propertyKeys);
+        return this.vertex.graph.getTrait().getProperties(this, propertyKeys);
     }
 
     @Override
     public <U> Property<U> property(final String key, final U value) {
-        this.vertex.graph.tx().readWrite();
         ElementHelper.validateProperty(key, value);
-        return this.vertex.graph.trait.setProperty(this, key, value);
+        return this.vertex.graph.getTrait().setProperty(this, key, value);
     }
 
     @Override
     public void remove() {
-        this.vertex.graph.tx().readWrite();
-        this.vertex.graph.trait.removeVertexProperty(this);
+        this.vertex.graph.getTrait().removeVertexProperty(this);
         this.vertexPropertyNode= null;
     }
 

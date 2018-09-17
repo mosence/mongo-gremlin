@@ -38,7 +38,6 @@ public final class MongodbProperty<V> implements Property<V> {
             return;
         }
         this.removed = true;
-        this.graph.tx().readWrite();
         final MongodbEntity entity = this.element instanceof MongodbVertexProperty ?
                 ((MongodbVertexProperty) this.element).vertexPropertyNode :
                 ((BaseMongodbElement) this.element).getBaseElement();

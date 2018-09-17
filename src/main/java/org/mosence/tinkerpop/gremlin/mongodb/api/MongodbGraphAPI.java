@@ -68,12 +68,6 @@ public interface MongodbGraphAPI {
     Iterable<MongodbNode> findNodes(String label, String property, Object value);
 
     /**
-     * 图事务
-     * @return 获取mongodb图事务
-     */
-    MongodbTx tx();
-
-    /**
      * 使用mongodb查询
      * @param query 查询语句
      * @param params 参数

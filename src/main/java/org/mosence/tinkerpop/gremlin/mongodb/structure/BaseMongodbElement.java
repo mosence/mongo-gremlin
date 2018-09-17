@@ -29,13 +29,11 @@ public abstract class BaseMongodbElement implements Element, WrappedElement<Mong
 
     @Override
     public Object id() {
-        this.graph.tx().readWrite();
         return this.baseElement.getId();
     }
 
     @Override
     public Set<String> keys() {
-        this.graph.tx().readWrite();
         final Set<String> keys = new HashSet<>();
         for (final String key : this.baseElement.getKeys()) {
             if (!Graph.Hidden.isHidden(key) && !ignoreKeys().contains(key)) {

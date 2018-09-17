@@ -42,7 +42,6 @@ public final class MongodbEdge extends BaseMongodbElement implements Edge, Wrapp
 
     @Override
     public Iterator<Vertex> vertices(final Direction direction) {
-        this.graph.tx().readWrite();
         try{
             switch (direction) {
                 case OUT:
@@ -53,14 +52,12 @@ public final class MongodbEdge extends BaseMongodbElement implements Edge, Wrapp
                     return IteratorUtils.of(new MongodbVertex(this.getBaseEdge().start(), this.graph), new MongodbVertex(this.getBaseEdge().end(), this.graph));
             }
         }catch (MongoException ex){
-            ((MongodbGraph.MongodbTransaction)graph().tx()).error(ex);
             throw new TraversalInterruptedException();
         }
     }
 
     @Override
     public void remove() {
-        this.graph.tx().readWrite();
         try {
             this.baseElement.delete();
         } catch (IllegalStateException ignored) {
@@ -82,7 +79,6 @@ public final class MongodbEdge extends BaseMongodbElement implements Edge, Wrapp
 
     @Override
     public String label() {
-        this.graph.tx().readWrite();
         return this.getBaseEdge().type();
     }
 
@@ -93,7 +89,6 @@ public final class MongodbEdge extends BaseMongodbElement implements Edge, Wrapp
 
     @Override
     public <V> Iterator<Property<V>> properties(final String... propertyKeys) {
-        this.graph.tx().readWrite();
         Iterable<String> keys = this.baseElement.getKeys();
         List<String> keyList = Stream.of(propertyKeys).map(k->k.replaceAll(PROPERTY_REPLACE_REGEX,PROPERTY_REPLACE_CHAR)).collect(Collectors.toList());
         String[] keyArray = keyList.toArray(new String[0]);
@@ -105,7 +100,6 @@ public final class MongodbEdge extends BaseMongodbElement implements Edge, Wrapp
 
     @Override
     public <V> Property<V> property(final String key) {
-        this.graph.tx().readWrite();
         if (this.baseElement.hasProperty(key)) {
             return new MongodbProperty<>(this, key, (V) this.baseElement.getProperty(key));
         } else {
@@ -116,7 +110,6 @@ public final class MongodbEdge extends BaseMongodbElement implements Edge, Wrapp
     @Override
     public <V> Property<V> property(final String key, final V value) {
         ElementHelper.validateProperty(key, value);
-        this.graph.tx().readWrite();
         try {
             this.baseElement.setProperty(key, value);
             return new MongodbProperty<>(this, key, value);

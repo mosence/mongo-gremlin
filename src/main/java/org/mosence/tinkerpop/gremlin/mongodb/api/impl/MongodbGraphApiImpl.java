@@ -8,12 +8,14 @@ import org.bson.types.ObjectId;
 import org.mosence.tinkerpop.gremlin.mongodb.api.MongodbGraphAPI;
 import org.mosence.tinkerpop.gremlin.mongodb.api.MongodbNode;
 import org.mosence.tinkerpop.gremlin.mongodb.api.MongodbRelationship;
-import org.mosence.tinkerpop.gremlin.mongodb.api.MongodbTx;
 import org.mosence.tinkerpop.gremlin.mongodb.api.impl.exception.NotFoundException;
 import org.mosence.tinkerpop.gremlin.mongodb.api.impl.property.MongodbEdgeProperty;
 import org.mosence.tinkerpop.gremlin.mongodb.api.impl.property.MongodbNodeProperty;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -29,14 +31,12 @@ public class MongodbGraphApiImpl implements MongodbGraphAPI {
     private final String edgeCollection;
     private final MongoClient mongoClient;
     private final String database;
-    private volatile MongodbTxImpl mongodbTx;
 
     MongodbGraphApiImpl(MongoClient mongoClient, String database, String nodeCollection, String edgeCollection) {
         this.mongoClient = mongoClient;
         this.database = database;
         this.nodeCollection = nodeCollection;
         this.edgeCollection = edgeCollection;
-        this.mongodbTx = new MongodbTxImpl(mongoClient);
     }
 
     @Override
@@ -93,17 +93,6 @@ public class MongodbGraphApiImpl implements MongodbGraphAPI {
     @Override
     public Iterable<MongodbNode> findNodes(String label, String property, Object value) {
         return nodeCollection().find(and(or(new Document(MongodbNodeProperty.label.name(),label),eq(MongodbNodeProperty.type.name(),label)),eq(property,value))).map(node->MongodbNodeImpl.valueOf(node,nodeCollection(),edgeCollection()));
-    }
-
-    @Override
-    public MongodbTx tx() {
-        if(Objects.isNull(mongodbTx)){
-            mongodbTx = new MongodbTxImpl(mongoClient);
-        }
-        if(mongodbTx.isClose()){
-            mongodbTx = new MongodbTxImpl(mongoClient);
-        }
-        return mongodbTx;
     }
 
     @Override

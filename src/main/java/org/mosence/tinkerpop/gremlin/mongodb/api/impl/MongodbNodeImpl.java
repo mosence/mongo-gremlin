@@ -32,14 +32,12 @@ public class MongodbNodeImpl extends BaseMongodbEntityImpl implements MongodbNod
     public static MongodbNodeImpl newInstance(Document node, MongoCollection<Document> nodeCollection, MongoCollection<Document> edgeCollection) {
         MongodbNodeImpl newNode = new MongodbNodeImpl(node,nodeCollection,edgeCollection);
         newNode.needCreate();
-        MongodbTxImpl.ram(newNode);
         newNode.persist();
         return newNode;
     }
 
     public static MongodbNodeImpl valueOf(Document node, MongoCollection<Document> nodeCollection, MongoCollection<Document> edgeCollection) {
         MongodbNodeImpl newNode = new MongodbNodeImpl(node,nodeCollection,edgeCollection);
-        MongodbTxImpl.ram(newNode);
         return newNode;
     }
 

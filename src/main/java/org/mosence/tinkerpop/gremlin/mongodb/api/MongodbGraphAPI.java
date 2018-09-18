@@ -116,4 +116,10 @@ public interface MongodbGraphAPI {
      * @param value 属性value
      */
     void setProperty(String key, Object value);
+
+    /**
+     * 获取computerApi实现
+     * @return computerApi实现
+     */
+    MongodbGraphComputerAPI computerAPI();
 }

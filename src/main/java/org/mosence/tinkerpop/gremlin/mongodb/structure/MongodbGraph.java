@@ -17,6 +17,7 @@ import org.mosence.tinkerpop.gremlin.mongodb.api.MongodbFactory;
 import org.mosence.tinkerpop.gremlin.mongodb.api.MongodbGraphAPI;
 import org.mosence.tinkerpop.gremlin.mongodb.api.MongodbNode;
 import org.mosence.tinkerpop.gremlin.mongodb.api.MongodbRelationship;
+import org.mosence.tinkerpop.gremlin.mongodb.process.computer.MongodbGraphComputer;
 import org.mosence.tinkerpop.gremlin.mongodb.process.traversal.strategy.optimization.MongodbGraphStepStrategy;
 import org.mosence.tinkerpop.gremlin.mongodb.structure.feature.MongodbGremlinFeatures;
 import org.mosence.tinkerpop.gremlin.mongodb.structure.trait.DefaultMongodbTrait;
@@ -210,7 +211,8 @@ public final class MongodbGraph implements Graph, WrappedGraph<MongodbGraphAPI> 
 
     @Override
     public GraphComputer compute() {
-        throw Graph.Exceptions.graphComputerNotSupported();
+        return new MongodbGraphComputer(this);
+        //throw Graph.Exceptions.graphComputerNotSupported();
     }
 
     @Override

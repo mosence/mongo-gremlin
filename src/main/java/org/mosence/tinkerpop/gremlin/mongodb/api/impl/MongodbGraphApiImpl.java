@@ -6,6 +6,7 @@ import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.mosence.tinkerpop.gremlin.mongodb.api.MongodbGraphAPI;
+import org.mosence.tinkerpop.gremlin.mongodb.api.MongodbGraphComputerAPI;
 import org.mosence.tinkerpop.gremlin.mongodb.api.MongodbNode;
 import org.mosence.tinkerpop.gremlin.mongodb.api.MongodbRelationship;
 import org.mosence.tinkerpop.gremlin.mongodb.api.impl.exception.NotFoundException;
@@ -129,6 +130,11 @@ public class MongodbGraphApiImpl implements MongodbGraphAPI {
 
     @Override
     public void setProperty(String key, Object value) {
+    }
+
+    @Override
+    public MongodbGraphComputerAPI computerAPI(){
+        return new MongodbGraphComputerApiImpl(mongoClient,database,nodeCollection,edgeCollection);
     }
 
     private MongoDatabase graphDatabase(){

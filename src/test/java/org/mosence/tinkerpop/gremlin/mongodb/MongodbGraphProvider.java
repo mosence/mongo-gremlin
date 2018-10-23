@@ -6,6 +6,7 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.AbstractGraphProvider;
 import org.apache.tinkerpop.gremlin.LoadGraphWith;
 import org.apache.tinkerpop.gremlin.structure.Graph;
+import org.mosence.tinkerpop.gremlin.mongodb.process.computer.*;
 import org.mosence.tinkerpop.gremlin.mongodb.structure.*;
 
 import java.util.HashMap;
@@ -25,6 +26,12 @@ public class MongodbGraphProvider extends AbstractGraphProvider {
         add(MongodbProperty.class);
         add(MongodbVertex.class);
         add(MongodbVertexProperty.class);
+        add(MongodbGraphComputer.class);
+        add(MongodbGraphMapEmitter.class);
+        add(MongodbGraphMemory.class);
+        add(MongodbGraphMessageBoard.class);
+        add(MongodbGraphMessenger.class);
+        add(MongodbGraphReduceEmitter.class);
     }};
 
     @Override

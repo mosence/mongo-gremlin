@@ -36,7 +36,24 @@ import java.util.stream.Stream;
 @Graph.OptIn(Graph.OptIn.SUITE_STRUCTURE_STANDARD)
 @Graph.OptIn(Graph.OptIn.SUITE_STRUCTURE_INTEGRATE)
 @Graph.OptIn(Graph.OptIn.SUITE_PROCESS_STANDARD)
+@Graph.OptIn(Graph.OptIn.SUITE_PROCESS_COMPUTER)
 @Graph.OptIn("org.mosence.tinkerpop.gremlin.mongodb.MongodbSuite")
+@Graph.OptOut(test="org.apache.tinkerpop.gremlin.process.traversal.step.map.ProfileTest",method = "modern_V_out_out_profile",reason = "MongodbGraph do not support profile !")
+@Graph.OptOut(test="org.apache.tinkerpop.gremlin.process.traversal.step.map.ProfileTest",method = "modern_V_out_out_profileXmetricsX",reason = "MongodbGraph do not support profile !")
+@Graph.OptOut(test="org.apache.tinkerpop.gremlin.process.traversal.step.map.ProfileTest",method = "grateful_V_out_out_profile",reason = "MongodbGraph do not support profile !")
+@Graph.OptOut(test="org.apache.tinkerpop.gremlin.process.traversal.step.map.ProfileTest",method = "grateful_V_out_out_profileXmetricsX",reason = "MongodbGraph do not support profile !")
+@Graph.OptOut(test="org.apache.tinkerpop.gremlin.process.traversal.step.map.ProfileTest",method = "g_V_sideEffectXThread_sleepX10XX_sideEffectXThread_sleepX5XX_profile",reason = "MongodbGraph do not support profile !")
+@Graph.OptOut(test="org.apache.tinkerpop.gremlin.process.traversal.step.map.ProfileTest",method = "g_V_sideEffectXThread_sleepX10XX_sideEffectXThread_sleepX5XX_profileXmetricsX",reason = "MongodbGraph do not support profile !")
+@Graph.OptOut(test="org.apache.tinkerpop.gremlin.process.traversal.step.map.ProfileTest",method = "g_V_repeat_both_profile",reason = "MongodbGraph do not support profile !")
+@Graph.OptOut(test="org.apache.tinkerpop.gremlin.process.traversal.step.map.ProfileTest",method = "g_V_repeat_both_profileXmetricsX",reason = "MongodbGraph do not support profile !")
+@Graph.OptOut(test="org.apache.tinkerpop.gremlin.process.traversal.step.map.ProfileTest",method = "g_V_whereXinXcreatedX_count_isX1XX_name_profile",reason = "MongodbGraph do not support profile !")
+@Graph.OptOut(test="org.apache.tinkerpop.gremlin.process.traversal.step.map.ProfileTest",method = "g_V_whereXinXcreatedX_count_isX1XX_name_profileXmetricsX",reason = "MongodbGraph do not support profile !")
+@Graph.OptOut(test="org.apache.tinkerpop.gremlin.process.traversal.step.map.ProfileTest",method = "testProfileStrategyCallback",reason = "MongodbGraph do not support profile !")
+@Graph.OptOut(test="org.apache.tinkerpop.gremlin.process.traversal.step.map.ProfileTest",method = "testProfileStrategyCallbackSideEffect",reason = "MongodbGraph do not support profile !")
+@Graph.OptOut(test="org.apache.tinkerpop.gremlin.process.traversal.step.map.ProfileTest",method = "g_V_matchXa_created_b__b_in_count_isXeqX1XXX_selectXa_bX_profile",reason = "MongodbGraph do not support profile !")
+@Graph.OptOut(test="org.apache.tinkerpop.gremlin.process.traversal.step.map.ProfileTest",method = "g_V_matchXa_created_b__b_in_count_isXeqX1XXX_selectXa_bX_profileXmetricsX",reason = "MongodbGraph do not support profile !")
+@Graph.OptOut(test="org.apache.tinkerpop.gremlin.process.traversal.step.map.ProfileTest",method = "g_V_hasLabelXpersonX_pageRank_byXrankX_byXbothEX_rank_profile",reason = "MongodbGraph do not support profile !")
+@Graph.OptOut(test="org.apache.tinkerpop.gremlin.process.traversal.step.map.ProfileTest",method = "g_V_groupXmX_profile",reason = "MongodbGraph do not support profile !")
 @SuppressWarnings("unchecked")
 public final class MongodbGraph implements Graph, WrappedGraph<MongodbGraphAPI> {
     public static final Logger LOGGER = LoggerFactory.getLogger(MongodbGraph.class);
@@ -206,7 +223,11 @@ public final class MongodbGraph implements Graph, WrappedGraph<MongodbGraphAPI> 
 
     @Override
     public <C extends GraphComputer> C compute(final Class<C> graphComputerClass) {
-        throw Graph.Exceptions.graphComputerNotSupported();
+        if (!graphComputerClass.equals(MongodbGraphComputer.class)){
+            throw Graph.Exceptions.graphDoesNotSupportProvidedGraphComputer(graphComputerClass);
+        }
+        return (C) new MongodbGraphComputer(this);
+        //throw Graph.Exceptions.graphComputerNotSupported();
     }
 
     @Override

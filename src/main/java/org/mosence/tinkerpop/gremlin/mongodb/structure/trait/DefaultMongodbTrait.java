@@ -74,7 +74,7 @@ public final class DefaultMongodbTrait implements MongodbTrait {
 
     @Override
     public <V> VertexProperty<V> getVertexProperty(final MongodbVertex vertex, final String key) {
-        return vertex.getBaseVertex().hasProperty(key) ? new MongodbVertexProperty<>(vertex, key, (V) vertex.getBaseVertex().getProperty(key)) : VertexProperty.empty();
+        return vertex.getBaseVertex().hasProperty(key) ? new MongodbVertexProperty<>(vertex, key, (V) vertex.getBaseVertex().getProperty(key)) : VertexProperty.<V>empty();
     }
 
     @Override

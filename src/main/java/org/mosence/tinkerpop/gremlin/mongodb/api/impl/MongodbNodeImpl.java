@@ -109,14 +109,25 @@ public class MongodbNodeImpl extends BaseMongodbEntityImpl implements MongodbNod
         Bson filter;
         switch (direction) {
             case OUTGOING:
-                filter = eq(MongodbEdgeProperty.source.name(), getId());
+                filter = or(
+                        eq(MongodbEdgeProperty.source.name(), getId()),
+                        eq(MongodbEdgeProperty.source.name(), new ObjectId(getId()))
+                );
                 break;
             case INCOMING:
-                filter = eq(MongodbEdgeProperty.target.name(), getId());
+                filter = or(
+                        eq(MongodbEdgeProperty.target.name(), getId()),
+                        eq(MongodbEdgeProperty.target.name(), new ObjectId(getId()))
+                );
                 break;
             case BOTH:
             default:
-                filter = or(eq(MongodbEdgeProperty.source.name(), getId()), eq(MongodbEdgeProperty.target.name(), getId()));
+                filter = or(
+                        eq(MongodbEdgeProperty.source.name(), getId()),
+                        eq(MongodbEdgeProperty.target.name(), getId()),
+                        eq(MongodbEdgeProperty.source.name(), new ObjectId(getId())),
+                        eq(MongodbEdgeProperty.target.name(), new ObjectId(getId()))
+                );
                 break;
         }
         if (types.length > 0) {

@@ -1,5 +1,6 @@
 package org.mosence.tinkerpop.gremlin.mongodb.api.impl;
 
+import com.mongodb.ConnectionString;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import org.apache.commons.lang.StringUtils;
@@ -21,9 +22,13 @@ public class MongodbFactoryImpl implements MongodbFactory {
     @Override
     public MongodbGraphAPI newGraphDatabase(String uri, Map<String, String> config) {
         try {
+            ConnectionString connectionString = new ConnectionString(uri);
             String nodeCollection = config.get(NODE_COLLECTION_KEY);
             String edgeCollection = config.get(EDGE_COLLECTION_KEY);
             String database = config.get(GRAPH_DATABASE);
+            if(StringUtils.isBlank(database)){
+                database = connectionString.getDatabase();
+            }
             if(StringUtils.isBlank(nodeCollection) || StringUtils.isBlank(edgeCollection)){
                 throw new RuntimeException("Error create mongo graph, need config 'gremlin.mongo.node.collection' and 'gremlin.mongo.edge.collection'");
             }

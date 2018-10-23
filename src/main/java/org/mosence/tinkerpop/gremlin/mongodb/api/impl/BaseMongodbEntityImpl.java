@@ -1,6 +1,7 @@
 package org.mosence.tinkerpop.gremlin.mongodb.api.impl;
 
 import com.mongodb.client.MongoCollection;
+import org.apache.tinkerpop.gremlin.process.traversal.traverser.util.TraverserSet;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.mosence.tinkerpop.gremlin.mongodb.api.MongodbEntity;
@@ -9,6 +10,7 @@ import org.mosence.tinkerpop.gremlin.mongodb.api.MongodbRelationship;
 import org.mosence.tinkerpop.gremlin.mongodb.api.impl.property.MongodbEdgeProperty;
 import org.mosence.tinkerpop.gremlin.mongodb.api.impl.property.MongodbNodeProperty;
 
+import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -77,9 +79,16 @@ public abstract class BaseMongodbEntityImpl implements MongodbEntity, Cloneable 
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Object getProperty(String name) {
         name = formatProperty(name);
-        return entity.get(name);
+        Object property = entity.get(name);
+        if(property instanceof Collection){
+            TraverserSet<Object> set = new TraverserSet<>();
+            set.addAll((Collection)property);
+            return set;
+        }
+        return property;
     }
 
     @Override

@@ -6,6 +6,9 @@ import org.apache.tinkerpop.gremlin.process.computer.MapReduce;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+/**
+ * @author MoSence
+ */
 public class MongodbGraphReduceEmitter<OK, OV> implements MapReduce.ReduceEmitter<OK, OV> {
 
     protected Queue<KeyValue<OK, OV>> reduceQueue = new ConcurrentLinkedQueue<>();

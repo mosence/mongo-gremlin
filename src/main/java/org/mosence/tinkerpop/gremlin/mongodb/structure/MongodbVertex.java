@@ -144,6 +144,7 @@ public final class MongodbVertex extends BaseMongodbElement implements Vertex, W
 
     public Set<String> labels() {
         final Set<String> labels = new TreeSet<>(this.getBaseVertex().labels());
+        labels.add(this.getBaseVertex().type());
         return Collections.unmodifiableSet(labels);
     }
 

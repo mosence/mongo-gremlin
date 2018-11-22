@@ -4,6 +4,7 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.mosence.tinkerpop.gremlin.mongodb.api.MongodbGraphAPI;
 import org.mosence.tinkerpop.gremlin.mongodb.api.MongodbGraphComputerAPI;
@@ -52,22 +53,35 @@ public class MongodbGraphApiImpl implements MongodbGraphAPI {
 
     @Override
     public MongodbNode getNodeById(String id) throws NotFoundException{
-
-        Document result = nodeCollection().find(
-                or(
-                        eq(MongodbNodeProperty._id.name(),new ObjectId(id)),
-                        eq(MongodbNodeProperty._id.name(),id)
-                )).first();
+        Bson filter = null;
+        if(ObjectId.isValid(id)){
+            filter = or(
+                    eq(MongodbNodeProperty._id.name(),new ObjectId(id)),
+                    eq(MongodbNodeProperty._id.name(),id)
+            );
+        }else{
+            filter = or(
+                    eq(MongodbNodeProperty._id.name(),id)
+            );
+        }
+        Document result = nodeCollection().find(filter).first();
         return Optional.ofNullable(result).map(node->MongodbNodeImpl.valueOf(node,nodeCollection(),edgeCollection())).orElseThrow(NotFoundException::new);
     }
 
     @Override
     public MongodbRelationship getRelationshipById(String id) throws NotFoundException{
-        Document result = edgeCollection().find(
-                or(
-                        eq(MongodbEdgeProperty._id.name(),new ObjectId(id)),
-                        eq(MongodbEdgeProperty._id.name(),id)
-                )).first();
+        Bson filter = null;
+        if(ObjectId.isValid(id)){
+            filter = or(
+                    eq(MongodbEdgeProperty._id.name(),new ObjectId(id)),
+                    eq(MongodbEdgeProperty._id.name(),id)
+            );
+        }else{
+            filter = or(
+                    eq(MongodbEdgeProperty._id.name(),id)
+            );
+        }
+        Document result = edgeCollection().find(filter).first();
         return Optional.ofNullable(result).map(edge->MongodbRelationshipImpl.valueOf(edge,nodeCollection(),edgeCollection())).orElseThrow(NotFoundException::new);
     }
 

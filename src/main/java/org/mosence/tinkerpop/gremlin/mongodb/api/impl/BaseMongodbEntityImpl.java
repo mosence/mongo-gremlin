@@ -3,6 +3,7 @@ package org.mosence.tinkerpop.gremlin.mongodb.api.impl;
 import com.mongodb.client.MongoCollection;
 import org.apache.tinkerpop.gremlin.process.traversal.traverser.util.TraverserSet;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.mosence.tinkerpop.gremlin.mongodb.api.MongodbEntity;
 import org.mosence.tinkerpop.gremlin.mongodb.api.MongodbNode;
@@ -144,18 +145,32 @@ public abstract class BaseMongodbEntityImpl implements MongodbEntity, Cloneable 
 
     protected boolean originExists() {
         if (this instanceof MongodbNode) {
-            return Objects.nonNull(nodeCollection.find(
-                    or(
-                            eq(MongodbNodeProperty._id.name(), new ObjectId(getId())),
-                            eq(MongodbNodeProperty._id.name(), getId())
-                    )).first());
+            Bson filter = null;
+            if(ObjectId.isValid(getId())){
+                filter = or(
+                        eq(MongodbNodeProperty._id.name(), new ObjectId(getId())),
+                        eq(MongodbNodeProperty._id.name(), getId())
+                );
+            }else{
+                filter = or(
+                        eq(MongodbNodeProperty._id.name(), getId())
+                );
+            }
+            return Objects.nonNull(nodeCollection.find(filter).first());
         }
         if (this instanceof MongodbRelationship) {
-            return Objects.nonNull(edgeCollection.find(
-                    or(
-                            eq(MongodbNodeProperty._id.name(), new ObjectId(getId())),
-                            eq(MongodbNodeProperty._id.name(), getId())
-                    )).first());
+            Bson filter = null;
+            if(ObjectId.isValid(getId())){
+                filter = or(
+                        eq(MongodbNodeProperty._id.name(), new ObjectId(getId())),
+                        eq(MongodbNodeProperty._id.name(), getId())
+                );
+            }else{
+                filter = or(
+                        eq(MongodbNodeProperty._id.name(), getId())
+                );
+            }
+            return Objects.nonNull(edgeCollection.find(filter).first());
         }
         return false;
     }

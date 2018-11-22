@@ -2,6 +2,7 @@ package org.mosence.tinkerpop.gremlin.mongodb.api.impl;
 
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.mosence.tinkerpop.gremlin.mongodb.api.MongodbNode;
 import org.mosence.tinkerpop.gremlin.mongodb.api.MongodbRelationship;
@@ -11,6 +12,8 @@ import org.mosence.tinkerpop.gremlin.mongodb.api.impl.property.MongodbNodeProper
 import java.util.Set;
 
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.or;
+
 /**
  * 边实现
  * @author MoSence
@@ -46,8 +49,18 @@ public class MongodbRelationshipImpl extends BaseMongodbEntityImpl implements Mo
 
     @Override
     public MongodbNode start() {
-        ObjectId startId = new ObjectId(startId());
-        return nodeCollection.find(eq(MongodbNodeProperty._id.name(),startId)).map(node->MongodbNodeImpl.valueOf(node,nodeCollection,edgeCollection)).first();
+        Bson filter;
+        if(ObjectId.isValid(startId())){
+            filter = or(
+                    eq(MongodbNodeProperty._id.name(), startId()),
+                    eq(MongodbNodeProperty._id.name(), new ObjectId(startId()))
+            );
+        }else{
+            filter = or(
+                    eq(MongodbNodeProperty._id.name(), startId())
+            );
+        }
+        return nodeCollection.find(filter).map(node->MongodbNodeImpl.valueOf(node,nodeCollection,edgeCollection)).first();
     }
 
     @Override
@@ -58,8 +71,18 @@ public class MongodbRelationshipImpl extends BaseMongodbEntityImpl implements Mo
 
     @Override
     public MongodbNode end() {
-        ObjectId endId = new ObjectId(endId());
-        return nodeCollection.find(eq(MongodbNodeProperty._id.name(),endId)).map(node->MongodbNodeImpl.valueOf(node,nodeCollection,edgeCollection)).first();
+        Bson filter;
+        if(ObjectId.isValid(startId())){
+            filter = or(
+                    eq(MongodbNodeProperty._id.name(), endId()),
+                    eq(MongodbNodeProperty._id.name(), new ObjectId(endId()))
+            );
+        }else{
+            filter = or(
+                    eq(MongodbNodeProperty._id.name(), endId())
+            );
+        }
+        return nodeCollection.find(filter).map(node->MongodbNodeImpl.valueOf(node,nodeCollection,edgeCollection)).first();
     }
 
     @Override

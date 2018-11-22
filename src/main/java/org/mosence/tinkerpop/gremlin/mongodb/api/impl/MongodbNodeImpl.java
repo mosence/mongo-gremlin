@@ -109,25 +109,44 @@ public class MongodbNodeImpl extends BaseMongodbEntityImpl implements MongodbNod
         Bson filter;
         switch (direction) {
             case OUTGOING:
-                filter = or(
-                        eq(MongodbEdgeProperty.source.name(), getId()),
-                        eq(MongodbEdgeProperty.source.name(), new ObjectId(getId()))
-                );
+                if(ObjectId.isValid(getId())){
+                    filter = or(
+                            eq(MongodbEdgeProperty.source.name(), getId()),
+                            eq(MongodbEdgeProperty.source.name(), new ObjectId(getId()))
+                    );
+                }else{
+                    filter = or(
+                            eq(MongodbEdgeProperty.source.name(), getId())
+                    );
+                }
                 break;
             case INCOMING:
-                filter = or(
-                        eq(MongodbEdgeProperty.target.name(), getId()),
-                        eq(MongodbEdgeProperty.target.name(), new ObjectId(getId()))
-                );
+                if(ObjectId.isValid(getId())){
+                    filter = or(
+                            eq(MongodbEdgeProperty.target.name(), getId()),
+                            eq(MongodbEdgeProperty.target.name(), new ObjectId(getId()))
+                    );
+                }else{
+                    filter = or(
+                            eq(MongodbEdgeProperty.target.name(), getId())
+                    );
+                }
                 break;
             case BOTH:
             default:
-                filter = or(
-                        eq(MongodbEdgeProperty.source.name(), getId()),
-                        eq(MongodbEdgeProperty.target.name(), getId()),
-                        eq(MongodbEdgeProperty.source.name(), new ObjectId(getId())),
-                        eq(MongodbEdgeProperty.target.name(), new ObjectId(getId()))
-                );
+                if(ObjectId.isValid(getId())){
+                    filter = or(
+                            eq(MongodbEdgeProperty.source.name(), getId()),
+                            eq(MongodbEdgeProperty.target.name(), getId()),
+                            eq(MongodbEdgeProperty.source.name(), new ObjectId(getId())),
+                            eq(MongodbEdgeProperty.target.name(), new ObjectId(getId()))
+                    );
+                }else {
+                    filter = or(
+                            eq(MongodbEdgeProperty.source.name(), getId()),
+                            eq(MongodbEdgeProperty.target.name(), getId())
+                    );
+                }
                 break;
         }
         if (types.length > 0) {
